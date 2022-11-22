@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 #region Serializable classes
 [System.Serializable]
@@ -34,6 +35,16 @@ public class LevelController : MonoBehaviour {
     List<GameObject> planetsList = new List<GameObject>();
 
     Camera mainCamera;
+
+    public void PlayerDestroyed()
+    {
+        Invoke(nameof(ReloadScene), 2);
+    }
+
+    private void ReloadScene()
+    {
+        SceneManager.LoadScene("Demo_Scene");
+    }
 
     private void Start()
     {

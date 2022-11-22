@@ -9,10 +9,13 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameObject destructionFX;
-    [SerializeField] private int health = 3;
+    public GameObject mainDestructionFX;
+    public GameObject secondaryDestructionFX;
+    public GameObject tertiaryDestructionFX;
 
     public static Player instance;
+    public float destructionFXRange = .4f;
+    [SerializeField] private int health = 3;
 
     private void Awake()
     {
@@ -26,13 +29,26 @@ public class Player : MonoBehaviour
         health -= damage;
 
         if (health <= 0)
-            Destruction();
+        	StartCoroutine(Destruction());
     }
 
     //'Player's' destruction procedure
-    void Destruction()
+    private IEnumerator Destruction()
     {
-        Instantiate(destructionFX, transform.position, Quaternion.identity); //generating destruction visual effect and destroying the 'Player' object
+        Destroy(GetComponent<PlayerShooting>());
+        // Destroy(GetComponent<PlayerMoving>());
+
+        Instantiate(mainDestructionFX, transform.position, Quaternion.identity);
+
+        yield return new WaitForSeconds(.6f);
+        var randomPos = Random.insideUnitCircle * destructionFXRange;
+        Instantiate(secondaryDestructionFX, transform.position + new Vector3(randomPos.x, randomPos.y, 0), Quaternion.identity);
+
+        yield return new WaitForSeconds(.6f);
+        randomPos = Random.insideUnitCircle * destructionFXRange;
+        Instantiate(tertiaryDestructionFX, transform.position + new Vector3(randomPos.x, randomPos.y, 0), Quaternion.identity);
+
+        FindObjectOfType<LevelController>().PlayerDestroyed();
         Destroy(gameObject);
     }
 }
